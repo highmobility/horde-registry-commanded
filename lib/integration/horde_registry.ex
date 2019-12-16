@@ -1,7 +1,6 @@
 defmodule Integration.HordeRegistry do
   @moduledoc """
-  Local process registration, restricted to a single node, using Elixir's
-  `Registry` module.
+  Command Registration Adapter implementation using Horde Registry
   """
 
   alias Integration.NodeListener
