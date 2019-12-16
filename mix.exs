@@ -34,13 +34,15 @@ defmodule Integration.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-      {:jason, "~> 1.1"},
+      {:horde, "~> 0.7.1"},
       {:commanded, "~> 1.0.0"},
-      {:commanded_eventstore_adapter, "~> 1.0.0"},
-      {:eventstore, git: "https://github.com/scudelletti/eventstore.git", branch: "ds-fix-distributed", override: true},
-      {:horde, "~> 0.7.1"}
+      {:jason, "~> 1.1", only: [:dev, :test]},
+      {:commanded_eventstore_adapter, "~> 1.0.0", only: [:dev, :test]},
+      {:eventstore,
+       git: "https://github.com/scudelletti/eventstore.git",
+       branch: "ds-fix-distributed",
+       override: true,
+       only: [:dev, :test]}
     ]
   end
 end
