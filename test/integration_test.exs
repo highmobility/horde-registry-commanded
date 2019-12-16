@@ -105,22 +105,16 @@ defmodule IntegrationTest do
              )
 
     # - Inspect Event Handler Node A
-    # assert {:"a@127.0.0.1", _} = NodeHelper.rpc(node_a, "Integration.EventHandler.where_am_i")
+    assert {:"a@127.0.0.1", _} = NodeHelper.rpc(node_a, "Integration.EventHandler.where_am_i")
 
     # # - Inspect State EventHandler in Node A
-    # assert {%Integration.EventHandler{
-    #           message: "update",
-    #           uuid: uuid
-    #         }, _} = NodeHelper.rpc(node_a, "Integration.EventHandler.state")
+    assert {%Integration.EventHandler{
+              message: "update",
+              uuid: uuid
+            }, _} = NodeHelper.rpc(node_a, "Integration.EventHandler.state")
 
     # - Inspect Event Handler Node B
-    # assert {:"a@127.0.0.1", _} = NodeHelper.rpc(node_b, "Integration.EventHandler.where_am_i")
-
-    # - Inspect State EventHandler in Node B
-    # assert {%Integration.EventHandler{
-    #           message: "update",
-    #           uuid: uuid
-    #         }, _} = NodeHelper.rpc(node_b, "Integration.EventHandler.state")
+    assert {nil, _} = NodeHelper.rpc(node_b, "Process.whereis(Integration.EventHandler)")
 
     NodeHelper.stop(node_a)
     NodeHelper.stop(node_b)
