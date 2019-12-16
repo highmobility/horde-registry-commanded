@@ -1,6 +1,7 @@
 # HordeRegistryCommanded
 
-**TODO: Add description**
+[![Build Status](https://github.com/highmobility/horde-registry-commanded/workflows/CI/badge.svg)](https://github.com/highmobility/horde-registry-commanded/actions)
+
 
 ## Installation
 
@@ -9,7 +10,7 @@ by adding `HordeRegistryCommanded` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:horde_registry_commanded, github: "highmobility/horde_registry_commanded", tag: "v.1.0.0"}
+    {:horde_registry_commanded, github: "highmobility/horde-registry-commanded", tag: "v1.0.0"}
   ]
 end
 ```
