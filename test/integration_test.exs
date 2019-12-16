@@ -1,6 +1,14 @@
 defmodule IntegrationTest do
   use ExUnit.Case, async: false
 
+  setup do
+    config = Integration.EventStore.config()
+
+    :ok = EventStore.Tasks.Drop.exec(config, [])
+    :ok = EventStore.Tasks.Create.exec(config, [])
+    :ok = EventStore.Tasks.Init.exec(Integration.EventStore, config, [])
+  end
+
   test "start and connect 2 nodes" do
     {:ok, node_a} = NodeHelper.start("a")
     {:ok, node_b} = NodeHelper.start("b")
