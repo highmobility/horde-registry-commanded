@@ -9,7 +9,7 @@ by adding `HordeRegistryCommanded` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:horde_registry_commanded, github: "highmobility/horde_registry_commanded", tag: "v.1.0"}
+    {:horde_registry_commanded, github: "highmobility/horde_registry_commanded", tag: "v.1.0.0"}
   ]
 end
 ```
