@@ -12,6 +12,18 @@ jobs:
          - elixir: '1.9.4'
            otp: '22.x'
    runs-on: ubuntu-16.04
+   services:
+     postgres:
+       image: postgres:10.8
+       env:
+         POSTGRES_USER: postgres
+         POSTGRES_PASSWORD: postgres
+         POSTGRES_DB: postgres
+       ports:
+       # will assign a random free host port
+       - 5432/tcp
+       # needed because the postgres container does not provide a healthcheck
+       options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
    steps:
      - uses: actions/checkout@v1
      - uses: actions/setup-elixir@v1.0.0
@@ -23,6 +35,8 @@ jobs:
      - name: Run EPMD 
        run: epmd -daemon
      - name: Run Tests
+       env:
+         POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
        run: mix test
      - name: Run formatter 
        run: mix format --check-formatted
