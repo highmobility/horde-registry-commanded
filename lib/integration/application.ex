@@ -6,10 +6,11 @@ defmodule Integration.Application do
   use Application
 
   def start(_type, _args) do
-    children = [
-      # Starts a worker by calling: Integration.Worker.start_link(arg)
-      # {Integration.Worker, arg}
-    ]
+    children =
+      [
+        # Starts a worker by calling: Integration.Worker.start_link(arg)
+        # {Integration.Worker, arg}
+      ] ++ Application.get_env(:integration, :children)
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

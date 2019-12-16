@@ -1,16 +1,23 @@
 defmodule NodeHelper do
   use GenServer
 
+  @parser_text "PARSE_ME"
   @executable Path.expand("./_build/dev/rel/integration/bin/integration")
 
-  @to_term "|> :erlang.term_to_binary |> IO.inspect"
+  @to_term "|> IO.inspect() |> :erlang.term_to_binary |> IO.inspect(limit: :infinity, width: :infinity, label: \"#{
+             @parser_text
+           }\")"
 
   ##
   # Client
   ##
 
   def start(default) do
-    GenServer.start_link(__MODULE__, default)
+    result = GenServer.start_link(__MODULE__, default)
+
+    # TODO: Use notification instead
+    Process.sleep(1000)
+    result
   end
 
   def rpc(pid, cmd, raw: true) do
@@ -45,7 +52,6 @@ defmodule NodeHelper do
   @impl true
   def handle_continue(:initialize, node_name) do
     start_node(node_name)
-    Process.sleep(100)
 
     {:noreply, node_name}
   end
@@ -69,11 +75,31 @@ defmodule NodeHelper do
     System.cmd(@executable, ["rpc", cmd], env: [{"NODE_NAME", node_name}])
   end
 
+  defp from_term(""), do: ""
   defp from_term(text) when is_binary(text) do
+    try do
+      text
+      |> filter()
+      |> Code.eval_string()
+      |> elem(0)
+      |> :erlang.binary_to_term()
+    rescue
+      e ->
+        require IEx
+        IEx.pry()
+        e
+    end
+  end
+
+  defp filter(text) do
+    parser_text = "#{@parser_text}: "
+    default = [inspect(:erlang.term_to_binary(nil))]
+
     text
-    |> String.trim()
-    |> Code.eval_string()
-    |> elem(0)
-    |> :erlang.binary_to_term()
+    |> String.split("\n")
+    |> Enum.filter(&String.starts_with?(&1, parser_text))
+    |> (fn arg -> arg ++ default end).()
+    |> List.first()
+    |> String.trim(parser_text)
   end
 end

@@ -17,25 +17,119 @@ defmodule IntegrationTest do
     NodeHelper.stop(node_b)
   end
 
-  test "Run Commands in 2 different Nodes" do
+  test "Run Commands in a non-distributed node" do
     # - Start NodeA
     {:ok, node_a} = NodeHelper.start("a")
-    # - Start NodeB
+
+    uuid = UUID.uuid4()
+
+    # - Run Command Start
+    NodeHelper.rpc(
+      node_a,
+      ":ok = Integration.App.dispatch(%Integration.Commands.Create{uuid: \"#{uuid}\", message: \"create\"})"
+    )
+
+    # - Inspect State Aggregate
+    assert {
+             %Integration.Aggregate{message: "create", uuid: uuid},
+             _
+           } =
+             NodeHelper.rpc(
+               node_a,
+               "Commanded.Aggregates.Aggregate.aggregate_state(Integration.App, Integration.Aggregate, \"#{
+                 uuid
+               }\")"
+             )
+
+    # - Inspect State EventHandler
+    assert {%Integration.EventHandler{
+              count_apply: 1,
+              count_execute: 1,
+              message: "create",
+              uuid: uuid
+            }, _} = NodeHelper.rpc(node_a, "Integration.EventHandler.state")
+
+    NodeHelper.stop(node_a)
+  end
+
+  test "Run Commands in 2 different Nodes" do
+    # - Start Nodes
+    {:ok, node_a} = NodeHelper.start("a")
     {:ok, node_b} = NodeHelper.start("b")
+
     # - Connect nodes
-    NodeHelper.connect(node_a, node_b)
+    # NodeHelper.connect(node_a, node_b)
+
+    uuid = UUID.uuid4()
 
     # - Run Command Start in NodeA
-    # NodeHelper.rpc(node_a, "ADD COMMANDED COMMAND HERE")
-    # - Run Command Process in NodeB
-    # NodeHelper.rpc(node_b, "ADD COMMANDED COMMAND HERE")
+    NodeHelper.rpc(
+      node_a,
+      ":ok = Integration.App.dispatch(%Integration.Commands.Create{uuid: \"#{uuid}\", message: \"create\"})"
+    )
 
-    # - Inspect PID NodeA Aggregate
-    # - Inspect PID NodeA EventHandler
-    # - Inspect PID NodeB Aggregate
-    # - Inspect PID NodeB EventHandler
-    # - Compare Aggregate and see if they have the correct State
-    # - Compare EventHandler and see if they have the correct State
+    # - Run Command Process in NodeB
+    b = NodeHelper.rpc(
+      node_b,
+      ":ok = Integration.App.dispatch(%Integration.Commands.Update{uuid: \"#{uuid}\", message: \"update\"})"
+    )
+
+    require IEx; IEx.pry;
+
+    # - Inspect State Aggregate in Node A
+    assert {
+             %Integration.Aggregate{
+               message: "update",
+               node: :"a@127.0.0.1",
+               uuid: uuid
+             },
+             0
+           } =
+             NodeHelper.rpc(
+               node_a,
+               "Commanded.Aggregates.Aggregate.aggregate_state(Integration.App, Integration.Aggregate, \"#{
+                 uuid
+               }\")"
+             )
+
+    # - Inspect State Aggregate in Node B
+    assert {
+             %Integration.Aggregate{
+               message: "update",
+               node: :"a@127.0.0.1",
+               uuid: uuid
+             },
+             0
+           } =
+             NodeHelper.rpc(
+               node_b,
+               "Commanded.Aggregates.Aggregate.aggregate_state(Integration.App, Integration.Aggregate, \"#{
+                 uuid
+               }\")"
+             )
+
+    # - Inspect Event Handler Node A
+    assert {:"a@127.0.0.1", _} = NodeHelper.rpc(node_a, "Integration.EventHandler.where_am_i")
+
+    # - Inspect State EventHandler in Node A
+    assert {%Integration.EventHandler{
+              count_apply: 0,
+              count_execute: 0,
+              message: "update",
+              uuid: uuid
+            }, _} = NodeHelper.rpc(node_a, "Integration.EventHandler.state")
+
+
+    # - Inspect Event Handler Node B
+    #assert {:"a@127.0.0.1", _} = NodeHelper.rpc(node_b, "Integration.EventHandler.where_am_i")
+
+    # - Inspect State EventHandler in Node B
+    # assert {%Integration.EventHandler{
+    #           count_apply: 0,
+    #           count_execute: 0,
+    #           message: "update",
+    #           uuid: uuid
+    #         }, _} = NodeHelper.rpc(node_b, "Integration.EventHandler.state")
 
     NodeHelper.stop(node_a)
     NodeHelper.stop(node_b)
