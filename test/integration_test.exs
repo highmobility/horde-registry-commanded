@@ -25,7 +25,7 @@ defmodule IntegrationTest do
     NodeHelper.stop(node_b)
   end
 
-  test "Run Commands in a non-distributed node" do
+  test "Run Commands in a single node" do
     # - Start NodeA
     {:ok, node_a} = NodeHelper.start("a")
 
@@ -74,7 +74,7 @@ defmodule IntegrationTest do
       ":ok = Integration.App.dispatch(%Integration.Commands.Create{uuid: \"#{uuid}\", message: \"create\"})"
     )
 
-    # - Run Command Process in NodeB
+    # - Run Command Update in NodeB
     NodeHelper.rpc(
       node_b,
       ":ok = Integration.App.dispatch(%Integration.Commands.Update{uuid: \"#{uuid}\", message: \"update\"})"
@@ -113,13 +113,15 @@ defmodule IntegrationTest do
              )
 
     # Wait for EventHandler to be recreated
-    wait_for_event_handler = "(Enum.reduce(1..10, nil, fn _item, acc -> acc || (Process.whereis(Integration.EventHandler) || (Process.sleep(500) && nil)) end))"
+    wait_for_event_handler =
+      "(Enum.reduce(1..10, nil, fn _item, acc -> acc || (Process.whereis(Integration.EventHandler) || (Process.sleep(500) && nil)) end))"
+
     NodeHelper.rpc(node_a, wait_for_event_handler)
 
     # - Inspect Event Handler Node A
     assert {:"a@127.0.0.1", _} = NodeHelper.rpc(node_a, "Integration.EventHandler.where_am_i")
 
-    # # - Inspect State EventHandler in Node A
+    # - Inspect State EventHandler in Node A
     assert {%Integration.EventHandler{
               message: "update",
               uuid: uuid
@@ -151,7 +153,7 @@ defmodule IntegrationTest do
     # - Kill NodeA
     NodeHelper.stop(node_a)
 
-    # - Run Command Process in NodeB
+    # - Run Command Update in NodeB
     NodeHelper.rpc(
       node_b,
       ":ok = Integration.App.dispatch(%Integration.Commands.Update{uuid: \"#{uuid}\", message: \"update\"})"
@@ -173,9 +175,10 @@ defmodule IntegrationTest do
                }\")"
              )
 
-
     # Wait for EventHandler to be recreated
-    wait_for_event_handler = "(Enum.reduce(1..10, nil, fn _item, acc -> acc || (Process.whereis(Integration.EventHandler) || (Process.sleep(500) && nil)) end))"
+    wait_for_event_handler =
+      "(Enum.reduce(1..10, nil, fn _item, acc -> acc || (Process.whereis(Integration.EventHandler) || (Process.sleep(500) && nil)) end))"
+
     NodeHelper.rpc(node_b, wait_for_event_handler)
 
     # - Inspect Event Handler Node B
@@ -186,7 +189,6 @@ defmodule IntegrationTest do
               message: "update",
               uuid: uuid
             }, _} = NodeHelper.rpc(node_b, "Integration.EventHandler.state")
-
 
     NodeHelper.stop(node_b)
   end
@@ -210,14 +212,16 @@ defmodule IntegrationTest do
     # - Kill NodeA
     NodeHelper.stop(node_a)
 
-    # - Run Command Process in NodeB
+    # - Run Command Update in NodeB
     NodeHelper.rpc(
       node_b,
       ":ok = Integration.App.dispatch(%Integration.Commands.Update{uuid: \"#{uuid}\", message: \"update\"})"
     )
 
     # Wait for EventHandler to be recreated
-    wait_for_event_handler = "(Enum.reduce(1..10, nil, fn _item, acc -> acc || (Process.whereis(Integration.EventHandler) || (Process.sleep(500) && nil)) end))"
+    wait_for_event_handler =
+      "(Enum.reduce(1..10, nil, fn _item, acc -> acc || (Process.whereis(Integration.EventHandler) || (Process.sleep(500) && nil)) end))"
+
     NodeHelper.rpc(node_b, wait_for_event_handler)
 
     # - Start Node A
@@ -226,7 +230,7 @@ defmodule IntegrationTest do
     # - Connect nodes
     NodeHelper.connect(node_a, node_b)
 
-    # - Run Command Finish in NodeA
+    # - Run Command Delete in NodeA
     NodeHelper.rpc(
       node_a,
       ":ok = Integration.App.dispatch(%Integration.Commands.Delete{uuid: \"#{uuid}\", message: \"delete\"})"
@@ -264,11 +268,21 @@ defmodule IntegrationTest do
                }\")"
              )
 
+    node_a_result =
+      NodeHelper.rpc(
+        node_a,
+        "Process.whereis(Integration.EventHandler) && Integration.EventHandler.state"
+      )
 
-    node_a_result = NodeHelper.rpc(node_a, "Process.whereis(Integration.EventHandler) && Integration.EventHandler.state")
-    node_b_result = NodeHelper.rpc(node_b, "Process.whereis(Integration.EventHandler) && Integration.EventHandler.state")
+    node_b_result =
+      NodeHelper.rpc(
+        node_b,
+        "Process.whereis(Integration.EventHandler) && Integration.EventHandler.state"
+      )
 
-    assert {event_handler_state, _} = Enum.find([node_a_result, node_b_result], fn {item, _} -> is_map(item) end)
+    assert {event_handler_state, _} =
+             Enum.find([node_a_result, node_b_result], fn {item, _} -> is_map(item) end)
+
     assert %Integration.EventHandler{message: "delete", uuid: uuid} = event_handler_state
 
     NodeHelper.stop(node_a)
