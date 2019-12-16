@@ -25,8 +25,8 @@ defmodule IntegrationTest do
 
   setup do
     on_exit(fn ->
-      Enum.each(Node.list, fn node ->
-       Integration.Cluster.stop(node)
+      Enum.each(Node.list(), fn node ->
+        Integration.Cluster.stop(node)
       end)
     end)
   end
@@ -188,7 +188,8 @@ defmodule IntegrationTest do
     assert :ok =
              rpc(node_c, Integration.App, :dispatch, [
                %Integration.Commands.Create{uuid: uuid, message: "create"}
-                 ])
+             ])
+
     IO.puts(String.duplicate("#", 300))
 
     assert :ok =
