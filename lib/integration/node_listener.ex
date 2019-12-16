@@ -46,6 +46,8 @@ defmodule Integration.NodeListener do
   def handle_info({:nodedown, _node, _}, state) do
     set_members()
 
+    invoke(state.mfa)
+
     {:noreply, state}
   end
 
