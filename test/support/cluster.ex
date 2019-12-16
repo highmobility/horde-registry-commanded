@@ -32,7 +32,10 @@ defmodule Integration.Cluster do
 
     # Load Personalized Config
     for {key, val} <-
-          Keyword.get(:rpc.block_call(node, Config.Reader, :read!, ["config.exs"]), :integration) do
+          Keyword.get(
+            :rpc.block_call(node, Config.Reader, :read!, ["config/worker.exs"]),
+            :integration
+          ) do
       :rpc.block_call(node, Application, :put_env, [:integration, key, val])
     end
 

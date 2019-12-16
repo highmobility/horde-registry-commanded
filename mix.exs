@@ -1,4 +1,6 @@
 defmodule Integration.MixProject do
+  @moduledoc false
+
   use Mix.Project
 
   def project do
@@ -7,18 +9,27 @@ defmodule Integration.MixProject do
       version: "0.1.0",
       elixir: "~> 1.9",
       start_permanent: Mix.env() == :prod,
-      config_path: "config.exs",
+      elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps()
     ]
+    |> Keyword.merge(project(Mix.env()))
   end
+
+  def project(:test), do: [config_path: "config/config.exs"]
+  def project(_), do: []
 
   # Run "mix help compile.app" to learn about applications.
   def application do
-    [
-      extra_applications: [:logger],
-      mod: {Integration.Application, []}
-    ]
+    [extra_applications: [:logger]]
+    |> Keyword.merge(application(Mix.env()))
   end
+
+  def application(:test), do: [mod: {Integration.Application, []}]
+  def application(_), do: []
+
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do

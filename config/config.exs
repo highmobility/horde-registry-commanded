@@ -10,13 +10,3 @@ config :integration, Integration.EventStore,
   database: "eventstore_test",
   hostname: "localhost",
   pool_size: 10
-
-config :integration,
-  children:
-    (Mix.env() == :test && []) ||
-      [
-        Integration.App,
-        {Integration.DistributedSupervisor, name: Integration.DistributedSupervisor},
-        {Integration.NodeListener,
-         invoke: {Integration.DistributedSupervisor, :start_handlers, []}}
-      ]
