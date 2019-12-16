@@ -23,18 +23,20 @@ defmodule IntegrationTest do
     Integration.Cluster.prepare()
   end
 
+  setup do
+    on_exit(fn ->
+      Enum.each(Node.list, fn node ->
+       Integration.Cluster.stop(node)
+      end)
+    end)
+  end
+
   test "start and connect 2 nodes" do
     {:ok, node_a} = Integration.Cluster.spawn(:node_a)
     {:ok, node_b} = Integration.Cluster.spawn(:node_b)
 
-    require IEx
-    IEx.pry()
-
     assert [:"primary@127.0.0.1", :"node_b@127.0.0.1"] = :rpc.block_call(node_a, Node, :list, [])
     assert [:"primary@127.0.0.1", :"node_a@127.0.0.1"] = :rpc.block_call(node_b, Node, :list, [])
-
-    Integration.Cluster.stop(node_a)
-    Integration.Cluster.stop(node_b)
   end
 
   test "Run Commands in a single node" do
@@ -56,8 +58,6 @@ defmodule IntegrationTest do
                Integration.Aggregate,
                uuid
              ])
-
-    Integration.Cluster.stop(node_a)
   end
 
   test "Run Commands in 2 different Nodes" do
@@ -94,9 +94,6 @@ defmodule IntegrationTest do
                Integration.Aggregate,
                uuid
              ])
-
-    Integration.Cluster.stop(node_a)
-    Integration.Cluster.stop(node_b)
   end
 
   test "Check State when a Node is Killed" do
@@ -128,8 +125,6 @@ defmodule IntegrationTest do
                Integration.Aggregate,
                uuid
              ])
-
-    Integration.Cluster.stop(node_b)
   end
 
   test "When a node is killed but join again later" do
@@ -178,8 +173,32 @@ defmodule IntegrationTest do
                Integration.Aggregate,
                uuid
              ])
+  end
 
-    Integration.Cluster.stop(node_a)
-    Integration.Cluster.stop(node_b)
+  test "Run Commands in 3 different Nodes - Regression Test" do
+    # - Start Nodes
+    {:ok, _node_a} = Integration.Cluster.spawn(:node_a)
+    {:ok, _node_b} = Integration.Cluster.spawn(:node_b)
+    {:ok, node_c} = Integration.Cluster.spawn(:node_c)
+
+    uuid = UUID.uuid4()
+
+    # - Run Command Create in NodeC
+
+    assert :ok =
+             rpc(node_c, Integration.App, :dispatch, [
+               %Integration.Commands.Create{uuid: uuid, message: "create"}
+                 ])
+    IO.puts(String.duplicate("#", 300))
+
+    assert :ok =
+             rpc(node_c, Integration.App, :dispatch, [
+               %Integration.Commands.Update{uuid: uuid, message: "update"}
+             ])
+
+    assert :ok =
+             rpc(node_c, Integration.App, :dispatch, [
+               %Integration.Commands.Delete{uuid: uuid, message: "delete"}
+             ])
   end
 end
