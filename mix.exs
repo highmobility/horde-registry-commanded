@@ -27,7 +27,8 @@ defmodule Integration.MixProject do
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
       {:jason, "~> 1.1"},
       {:commanded, "~> 1.0.0"},
-      {:commanded_eventstore_adapter, "~> 1.0.0"}
+      {:commanded_eventstore_adapter, "~> 1.0.0"},
+      {:horde, "~> 0.7.1"}
     ]
   end
 end

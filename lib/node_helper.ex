@@ -76,6 +76,7 @@ defmodule NodeHelper do
   end
 
   defp from_term(""), do: ""
+
   defp from_term(text) when is_binary(text) do
     try do
       text

@@ -43,8 +43,6 @@ defmodule IntegrationTest do
 
     # - Inspect State EventHandler
     assert {%Integration.EventHandler{
-              count_apply: 1,
-              count_execute: 1,
               message: "create",
               uuid: uuid
             }, _} = NodeHelper.rpc(node_a, "Integration.EventHandler.state")
@@ -58,7 +56,7 @@ defmodule IntegrationTest do
     {:ok, node_b} = NodeHelper.start("b")
 
     # - Connect nodes
-    # NodeHelper.connect(node_a, node_b)
+    NodeHelper.connect(node_a, node_b)
 
     uuid = UUID.uuid4()
 
@@ -69,12 +67,10 @@ defmodule IntegrationTest do
     )
 
     # - Run Command Process in NodeB
-    b = NodeHelper.rpc(
+    NodeHelper.rpc(
       node_b,
       ":ok = Integration.App.dispatch(%Integration.Commands.Update{uuid: \"#{uuid}\", message: \"update\"})"
     )
-
-    require IEx; IEx.pry;
 
     # - Inspect State Aggregate in Node A
     assert {
@@ -109,24 +105,19 @@ defmodule IntegrationTest do
              )
 
     # - Inspect Event Handler Node A
-    assert {:"a@127.0.0.1", _} = NodeHelper.rpc(node_a, "Integration.EventHandler.where_am_i")
+    # assert {:"a@127.0.0.1", _} = NodeHelper.rpc(node_a, "Integration.EventHandler.where_am_i")
 
-    # - Inspect State EventHandler in Node A
-    assert {%Integration.EventHandler{
-              count_apply: 0,
-              count_execute: 0,
-              message: "update",
-              uuid: uuid
-            }, _} = NodeHelper.rpc(node_a, "Integration.EventHandler.state")
-
+    # # - Inspect State EventHandler in Node A
+    # assert {%Integration.EventHandler{
+    #           message: "update",
+    #           uuid: uuid
+    #         }, _} = NodeHelper.rpc(node_a, "Integration.EventHandler.state")
 
     # - Inspect Event Handler Node B
-    #assert {:"a@127.0.0.1", _} = NodeHelper.rpc(node_b, "Integration.EventHandler.where_am_i")
+    # assert {:"a@127.0.0.1", _} = NodeHelper.rpc(node_b, "Integration.EventHandler.where_am_i")
 
     # - Inspect State EventHandler in Node B
     # assert {%Integration.EventHandler{
-    #           count_apply: 0,
-    #           count_execute: 0,
     #           message: "update",
     #           uuid: uuid
     #         }, _} = NodeHelper.rpc(node_b, "Integration.EventHandler.state")
