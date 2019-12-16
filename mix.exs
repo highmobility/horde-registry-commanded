@@ -40,8 +40,7 @@ defmodule Integration.MixProject do
       {:commanded, "~> 1.0.0"},
       {:commanded_eventstore_adapter, "~> 1.0.0"},
       {:eventstore, git: "https://github.com/scudelletti/eventstore.git", branch: "ds-fix-distributed", override: true},
-      {:horde, "~> 0.7.1"},
-      {:phoenix_pubsub, "~> 1.1"}
+      {:horde, "~> 0.7.1"}
     ]
   end
 end
