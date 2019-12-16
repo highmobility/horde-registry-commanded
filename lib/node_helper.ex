@@ -25,7 +25,7 @@ defmodule NodeHelper do
   end
 
   def rpc(pid, cmd) do
-    {output, exit_code} = GenServer.call(pid, {:rpc, cmd <> @to_term})
+    {output, exit_code} = GenServer.call(pid, {:rpc, cmd <> @to_term}, 20_000)
 
     {from_term(output), exit_code}
   end
