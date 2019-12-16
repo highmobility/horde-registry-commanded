@@ -119,4 +119,63 @@ defmodule IntegrationTest do
     NodeHelper.stop(node_a)
     NodeHelper.stop(node_b)
   end
+
+  test "Check State when a Node is Killed" do
+    # - Start Nodes
+    {:ok, node_a} = NodeHelper.start("a")
+    {:ok, node_b} = NodeHelper.start("b")
+
+    # - Connect nodes
+    NodeHelper.connect(node_a, node_b)
+
+    uuid = UUID.uuid4()
+
+    # - Run Command Start in NodeA
+    NodeHelper.rpc(
+      node_a,
+      ":ok = Integration.App.dispatch(%Integration.Commands.Create{uuid: \"#{uuid}\", message: \"create\"})"
+    )
+
+    # - Kill NodeA
+    NodeHelper.stop(node_a)
+
+    # - Run Command Process in NodeB
+    NodeHelper.rpc(
+      node_b,
+      ":ok = Integration.App.dispatch(%Integration.Commands.Update{uuid: \"#{uuid}\", message: \"update\"})"
+    )
+
+    # - Inspect State Aggregate in Node B
+    assert {
+             %Integration.Aggregate{
+               message: "update",
+               node: :"b@127.0.0.1",
+               uuid: uuid
+             },
+             0
+           } =
+             NodeHelper.rpc(
+               node_b,
+               "Commanded.Aggregates.Aggregate.aggregate_state(Integration.App, Integration.Aggregate, \"#{
+                 uuid
+               }\")"
+             )
+
+
+    # Wait for EventHandler to be recreated
+    stuff = "(Enum.reduce(1..10, nil, fn _item, acc -> acc || (Process.whereis(Integration.EventHandler) || (Process.sleep(500) && nil)) end))"
+    NodeHelper.rpc(node_b, stuff)
+
+    # - Inspect Event Handler Node B
+    assert {:"b@127.0.0.1", _} = NodeHelper.rpc(node_b, "Integration.EventHandler.where_am_i")
+
+    # - Inspect State EventHandler in Node B
+    assert {%Integration.EventHandler{
+              message: "update",
+              uuid: uuid
+            }, _} = NodeHelper.rpc(node_b, "Integration.EventHandler.state")
+
+
+    NodeHelper.stop(node_b)
+  end
 end
