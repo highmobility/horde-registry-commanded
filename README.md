@@ -1,16 +1,15 @@
-# Integration
+# HordeRegistryCommanded
 
 **TODO: Add description**
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `integration` to your list of dependencies in `mix.exs`:
+by adding `HordeRegistryCommanded` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:integration, "~> 0.1.0"}
+    {:horde_registry_commanded, github: "highmobility/horde_registry_commanded", tag: "v.1.0"}
   ]
 end
 ```

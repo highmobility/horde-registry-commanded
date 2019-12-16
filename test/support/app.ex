@@ -3,7 +3,7 @@ defmodule Integration.App do
 
   use Commanded.Application,
     otp_app: :integration,
-    registry: Integration.HordeRegistry,
+    registry: HordeRegistryCommanded.HordeRegistry,
     event_store: [
       adapter: Commanded.EventStore.Adapters.EventStore,
       event_store: Integration.EventStore

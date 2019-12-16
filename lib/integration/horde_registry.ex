@@ -1,9 +1,9 @@
-defmodule Integration.HordeRegistry do
+defmodule HordeRegistryCommanded.HordeRegistry do
   @moduledoc """
   Command Registration Adapter implementation using Horde Registry
   """
 
-  alias Integration.NodeListener
+  alias HordeRegistryCommanded.NodeListener
 
   @behaviour Commanded.Registration.Adapter
 

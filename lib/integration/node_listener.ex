@@ -1,8 +1,8 @@
-defmodule Integration.NodeListener do
+defmodule HordeRegistryCommanded.NodeListener do
   @moduledoc false
   use GenServer
 
-  @member_name Integration.HordeRegistry
+  @member_name HordeRegistryCommanded.HordeRegistry
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, opts)

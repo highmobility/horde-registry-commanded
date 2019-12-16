@@ -1,3 +1,3 @@
-defmodule Integration do
+defmodule HordeRegistryCommanded do
   @moduledoc false
 end
