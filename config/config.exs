@@ -9,5 +9,5 @@ config :integration, Integration.EventStore,
   password: "postgres",
   database: "eventstore_test",
   hostname: "localhost",
-  port: String.to_integer(System.get_env("POSTGRES_PORT", "5432")),
+  port: String.to_integer(System.get_env("POSTGRES_PORT") || "5432"),
   pool_size: 10
