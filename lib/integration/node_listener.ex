@@ -2,38 +2,25 @@ defmodule Integration.NodeListener do
   @moduledoc false
   use GenServer
 
-  @member_names [
-    Integration.HordeRegistry,
-    Integration.DistributedSupervisor
-  ]
+  @member_name Integration.HordeRegistry
 
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts, opts)
   end
 
   @impl true
-  def init(opts) do
+  def init(_opts) do
     :net_kernel.monitor_nodes(true, node_type: :visible)
 
-    state = %{mfa: Keyword.get(opts, :invoke)}
-
-    {:ok, state, {:continue, :initialize}}
+    {:ok, nil}
   end
 
   @impl true
   def handle_continue(:initialize, state) do
     set_members()
 
-    invoke(state.mfa)
-
     {:noreply, state}
   end
-
-  def invoke({m, f, a}) do
-    apply(m, f, a)
-  end
-
-  def invoke(_), do: nil
 
   @impl true
   def handle_info({:nodeup, _node, _}, state) do
@@ -46,8 +33,6 @@ defmodule Integration.NodeListener do
   def handle_info({:nodedown, _node, _}, state) do
     set_members()
 
-    invoke(state.mfa)
-
     {:noreply, state}
   end
 
@@ -57,8 +42,6 @@ defmodule Integration.NodeListener do
   end
 
   defp set_members() do
-    Enum.each(@member_names, fn name ->
-      :ok = Horde.Cluster.set_members(name, members(name))
-    end)
+    :ok = Horde.Cluster.set_members(@member_name, members(@member_name))
   end
 end

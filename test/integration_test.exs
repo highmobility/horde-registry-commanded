@@ -57,12 +57,6 @@ defmodule IntegrationTest do
                uuid
              ])
 
-    # - Inspect State EventHandler
-    assert %Integration.EventHandler{
-             message: "create",
-             uuid: uuid
-           } = rpc(node_a, Integration.EventHandler, :state, [])
-
     Integration.Cluster.stop(node_a)
   end
 
@@ -101,18 +95,6 @@ defmodule IntegrationTest do
                uuid
              ])
 
-    # - Inspect where EventHandler is running
-    assert :"node_a@127.0.0.1" = rpc(node_a, Integration.EventHandler, :where_am_i, [])
-
-    # - Inspect State EventHandler in Node A
-    assert %Integration.EventHandler{
-             message: "update",
-             uuid: uuid
-           } = rpc(node_a, Integration.EventHandler, :state, [])
-
-    # - Inspect Event Handler Node B
-    refute rpc(node_b, Process, :whereis, [Integration.EventHandler])
-
     Integration.Cluster.stop(node_a)
     Integration.Cluster.stop(node_b)
   end
@@ -146,15 +128,6 @@ defmodule IntegrationTest do
                Integration.Aggregate,
                uuid
              ])
-
-    # - Inspect Event Handler Node B
-    assert :"node_b@127.0.0.1" = rpc(node_b, Integration.EventHandler, :where_am_i, [])
-
-    # - Inspect State EventHandler in Node B
-    assert %Integration.EventHandler{
-             message: "update",
-             uuid: uuid
-           } = rpc(node_b, Integration.EventHandler, :state, [])
 
     Integration.Cluster.stop(node_b)
   end
@@ -205,17 +178,6 @@ defmodule IntegrationTest do
                Integration.Aggregate,
                uuid
              ])
-
-    node_a_result =
-      rpc(node_a, Process, :whereis, [Integration.EventHandler]) &&
-        rpc(node_a, Integration.EventHandler, :state, [])
-
-    node_b_result =
-      rpc(node_b, Process, :whereis, [Integration.EventHandler]) &&
-        rpc(node_b, Integration.EventHandler, :state, [])
-
-    assert %Integration.EventHandler{message: "delete", uuid: uuid} =
-             Enum.find([node_a_result, node_b_result], &is_map/1)
 
     Integration.Cluster.stop(node_a)
     Integration.Cluster.stop(node_b)
