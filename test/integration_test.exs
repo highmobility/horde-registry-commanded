@@ -112,6 +112,10 @@ defmodule IntegrationTest do
                }\")"
              )
 
+    # Wait for EventHandler to be recreated
+    wait_for_event_handler = "(Enum.reduce(1..10, nil, fn _item, acc -> acc || (Process.whereis(Integration.EventHandler) || (Process.sleep(500) && nil)) end))"
+    NodeHelper.rpc(node_a, wait_for_event_handler)
+
     # - Inspect Event Handler Node A
     assert {:"a@127.0.0.1", _} = NodeHelper.rpc(node_a, "Integration.EventHandler.where_am_i")
 
