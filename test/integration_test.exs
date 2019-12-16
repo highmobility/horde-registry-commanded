@@ -190,8 +190,6 @@ defmodule IntegrationTest do
                %Integration.Commands.Create{uuid: uuid, message: "create"}
              ])
 
-    IO.puts(String.duplicate("#", 300))
-
     assert :ok =
              rpc(node_c, Integration.App, :dispatch, [
                %Integration.Commands.Update{uuid: uuid, message: "update"}
