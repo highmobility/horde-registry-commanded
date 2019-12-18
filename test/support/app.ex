@@ -2,7 +2,7 @@ defmodule Integration.App do
   @moduledoc false
 
   use Commanded.Application,
-    otp_app: :integration,
+    otp_app: :horde_registry_commanded,
     registry: HordeRegistryCommanded.HordeRegistry,
     event_store: [
       adapter: Commanded.EventStore.Adapters.EventStore,

@@ -34,9 +34,9 @@ defmodule Integration.Cluster do
     for {key, val} <-
           Keyword.get(
             :rpc.block_call(node, Config.Reader, :read!, ["config/worker.exs"]),
-            :integration
+            :horde_registry_commanded
           ) do
-      :rpc.block_call(node, Application, :put_env, [:integration, key, val])
+      :rpc.block_call(node, Application, :put_env, [:horde_registry_commanded, key, val])
     end
 
     # Start Apps

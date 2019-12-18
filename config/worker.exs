@@ -1,8 +1,8 @@
 use Mix.Config
 
-import_config "config.exs"
+import_config "test.exs"
 
-config :integration,
+config :horde_registry_commanded,
   children: [
     Integration.App,
     HordeRegistryCommanded.NodeListener

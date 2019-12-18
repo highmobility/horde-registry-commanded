@@ -15,7 +15,7 @@ defmodule HordeRegistryCommanded.MixProject do
     |> Keyword.merge(project(Mix.env()))
   end
 
-  def project(:test), do: [config_path: "config/config.exs"]
+  def project(:test), do: [config_path: "config/test.exs"]
   def project(_), do: []
 
   # Run "mix help compile.app" to learn about applications.

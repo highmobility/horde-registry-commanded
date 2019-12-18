@@ -1,8 +1,8 @@
 use Mix.Config
 
-config :integration, event_stores: [Integration.EventStore]
+config :horde_registry_commanded, event_stores: [Integration.EventStore]
 
-config :integration, Integration.EventStore,
+config :horde_registry_commanded, Integration.EventStore,
   registry: :distributed,
   serializer: Commanded.Serialization.JsonSerializer,
   username: "postgres",
