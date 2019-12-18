@@ -9,12 +9,7 @@ defmodule IntegrationTest do
   end
 
   def rpc(node, module, function, arguments) do
-    ##
-    # TODO: Pass PID to command/event so test can know when it was processed
-    ##
-    a = :rpc.block_call(node, module, function, arguments)
-    Process.sleep(100)
-    a
+    :rpc.block_call(node, module, function, arguments)
   end
 
   setup_all do
