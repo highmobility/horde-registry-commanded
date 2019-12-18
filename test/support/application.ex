@@ -10,7 +10,7 @@ defmodule Integration.Application do
       [
         # Starts a worker by calling: Integration.Worker.start_link(arg)
         # {Integration.Worker, arg}
-      ] ++ (Application.get_env(:integration, :children) || [])
+      ] ++ (Application.get_env(:horde_registry_commanded, :children) || [])
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
