@@ -9,12 +9,7 @@ defmodule IntegrationTest do
   end
 
   def rpc(node, module, function, arguments) do
-    ##
-    # TODO: Pass PID to command/event so test can know when it was processed
-    ##
-    a = :rpc.block_call(node, module, function, arguments)
-    Process.sleep(100)
-    a
+    :rpc.block_call(node, module, function, arguments)
   end
 
   setup_all do
@@ -35,8 +30,8 @@ defmodule IntegrationTest do
     {:ok, node_a} = Integration.Cluster.spawn(:node_a)
     {:ok, node_b} = Integration.Cluster.spawn(:node_b)
 
-    assert [:"primary@127.0.0.1", :"node_b@127.0.0.1"] = :rpc.block_call(node_a, Node, :list, [])
-    assert [:"primary@127.0.0.1", :"node_a@127.0.0.1"] = :rpc.block_call(node_b, Node, :list, [])
+    assert [:"primary@127.0.0.1", :"node_b@127.0.0.1"] = rpc(node_a, Node, :list, [])
+    assert [:"primary@127.0.0.1", :"node_a@127.0.0.1"] = rpc(node_b, Node, :list, [])
   end
 
   test "Run Commands in a single node" do
