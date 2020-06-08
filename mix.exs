@@ -37,7 +37,7 @@ defmodule HordeRegistryCommanded.MixProject do
       {:horde, "~> 0.7.1"},
       {:commanded, "~> 1.1"},
       {:jason, "~> 1.1", only: [:dev, :test]},
-      {:commanded_eventstore_adapter, "~> 1.0.0", only: [:dev, :test]},
+      {:commanded_eventstore_adapter, "~> 1.1", only: [:dev, :test]},
       {:eventstore,
        git: "https://github.com/scudelletti/eventstore.git",
        branch: "ds-fix-distributed",
