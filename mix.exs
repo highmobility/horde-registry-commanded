@@ -34,7 +34,7 @@ defmodule HordeRegistryCommanded.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:horde, "~> 0.7.1"},
+      {:horde, "~> 0.8.3"},
       {:commanded, "~> 1.1"},
       {:jason, "~> 1.1", only: [:dev, :test]},
       {:commanded_eventstore_adapter, "~> 1.1", only: [:dev, :test]}
