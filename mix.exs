@@ -35,9 +35,9 @@ defmodule HordeRegistryCommanded.MixProject do
   defp deps do
     [
       {:horde, "~> 0.8.3"},
-      {:commanded, "~> 1.1"},
+      {:commanded, "~> 1.2"},
       {:jason, "~> 1.1", only: [:dev, :test]},
-      {:commanded_eventstore_adapter, "~> 1.1", only: [:dev, :test]}
+      {:commanded_eventstore_adapter, "~> 1.2", only: [:dev, :test]}
     ]
   end
 end

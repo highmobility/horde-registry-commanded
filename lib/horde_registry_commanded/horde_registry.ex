@@ -71,7 +71,7 @@ defmodule HordeRegistryCommanded.HordeRegistry do
   Registers the pid with the given name.
   """
   @impl Commanded.Registration.Adapter
-  def start_link(adapter_meta, name, module, args) do
+  def start_link(adapter_meta, name, module, args, _start_options) do
     via_name = via_tuple(adapter_meta, name)
 
     case GenServer.start_link(module, args, name: via_name) do
