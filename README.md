@@ -1,6 +1,8 @@
 # HordeRegistryCommanded
 
-[![Build Status](https://github.com/highmobility/horde-registry-commanded/workflows/CI/badge.svg)](https://github.com/highmobility/horde-registry-commanded/actions)
+> We have stopped using Hord Registry in favour of :global registry with Commanded
+> 
+> This repo is not maintained anymore and archived  
 
 
 ## Installation
